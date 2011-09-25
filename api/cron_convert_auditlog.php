@@ -82,7 +82,12 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
         }
 
         
-		@$cal_number_of_records = 179;
+        $sql = "SELECT COUNT(id) AS number_of_records ";
+		$sql .= "FROM ticket_audit_log ";
+		$rs = $db->Execute($sql);
+		$row = mysql_fetch_assoc($rs);
+        
+		@$cal_number_of_records = $row['number_of_records'];
 		$tpl->assign('cal_number_of_records', $cal_number_of_records);
  
 		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '100');
