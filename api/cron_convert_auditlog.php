@@ -22,14 +22,31 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 
         $sql = "SELECT * ";
 		$sql .= "FROM ticket_audit_log ";
-		$sql .= "ORDER BY id ";
+		$sql .= "ORDER BY id DESC";
 	    $rs = $db->SelectLimit($sql, $cal_number_to_convert, 0) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg());
 		$logger->info("[Cerb5Blog.com] SQL = " . $sql . " with a limit of " . $cal_number_to_convert);
 		
 		while($row = mysql_fetch_assoc($rs)) {
 			// Loop though the records.
 			$id = intval($row['id']);
+		    $ticket_id = intval($row['ticket_id']);
+		    $worker_id = intval($row['worker_id']);
+		    $change_date = intval($row['change_date']);
+		    $change_field = $row['change_field'];
+		    $change_value = $row['change_value'];
+
             $logger->info("[Cerb5Blog.com] Looking at id = " . $id);			
+/*
+            DAO_ContextActivityLog::create(array(
+                DAO_ContextActivityLog::ACTIVITY_POINT => $activity_point,
+                DAO_ContextActivityLog::CREATED => $change_date,
+                DAO_ContextActivityLog::ACTOR_CONTEXT => $actor_context,
+                DAO_ContextActivityLog::ACTOR_CONTEXT_ID =>$actor_context_id,
+                DAO_ContextActivityLog::TARGET_CONTEXT => 'cerberusweb.contexts.ticket',
+                DAO_ContextActivityLog::TARGET_CONTEXT_ID => $id,
+                DAO_ContextActivityLog::ENTRY_JSON => json_encode($entry_array),
+            ));
+*/
 		}
 		$logger->info("[Cerb5Blog.com] Finished processing Convert Audit Log Cron Job.");
   }
