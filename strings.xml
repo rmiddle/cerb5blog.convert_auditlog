@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE tmx>
+<tmx version="1.4">
+	<header datatype="winres" segtype="sentence" adminlang="en-us"
+		srclang="en-us" o-tmf="abc" />
+	<body>
+    <!-- Generic Text -->
+    <tu tuid='cerb5blog.convert_auditlog.success'>
+      <tuv xml:lang="en_US"><seg>Saved Successfully</seg></tuv>
+    </tu>
+    <tu tuid='cerb5blog.convert_auditlog.no'>
+      <tuv xml:lang="en_US"><seg>No</seg></tuv>
+    </tu>
+
+    <tu tuid='cerb5blog.convert_auditlog.title'>
+      <tuv xml:lang="en_US"><seg>Cerb5Blog Convert Audit Log</seg></tuv>
+    </tu>
+    
+    <tu tuid='cerb5blog.convert_auditlog.config.tab.title'>
+      <tuv xml:lang="en_US"><seg>Convert Audit Log Options:</seg></tuv>
+    </tu>
+ 	
+    <tu tuid='cerb5blog.convert_auditlog.config.number_to_convert'>
+      <tuv xml:lang="en_US"><seg>How many records to convert per cron run:</seg></tuv>
+    </tu>
+    <tu tuid='cerb5blog.convert_auditlog.config.number_of_records'>
+      <tuv xml:lang="en_US"><seg>Number of records left to convert:</seg></tuv>
+    </tu>
+    
+   <tu tuid='cerb5blog.convert_auditlog.no_audit_log_to_convert'>
+      <tuv xml:lang="en_US"><seg>No Ticket Audit Logs Entries to convert.</seg></tuv>
+    </tu>
+ 
+    <!-- Error -->
+
+</body>
+</tmx>
+<!--
+
+-->

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.devblocks.com/schema/plugin.xsd">
+	<id>cerb5blog.convert_auditlog</id>
+	<name>[Cerb5Blog.com] Auto Close by Date</name>
+	<description>Converts Cerberus 5.3 Audit log entires to 5.5 or greater Activity Log entires</description>
+	<author>Robert Middleswarth</author>
+	<revision>7</revision>
+	<link>http://www.cerb5blog.com/project/convert_auditlog</link>
+	<image>plugin.png</image>
+
+	<!-- Plugin Dependencies -->
+	
+	<dependencies>
+		<require plugin_id="cerberusweb.core" version="5.5" />
+	</dependencies>
+
+	<extensions>
+		<extension point="cerberusweb.cron">
+			<id>cerb5blog.convert_auditlog.cron</id>
+			<name>[Cerb5Blog.com]  Convert Audit Log Cron Task</name>
+			<class>
+				<file>api/cron_convert_auditlog.php</file>
+				<name>Cerb5BlogConvertAuditLogCron</name>
+			</class>
+			<params>
+			</params>
+		</extension>		
+	</extensions>
+</plugin>
