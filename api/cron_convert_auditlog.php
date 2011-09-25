@@ -22,7 +22,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 
         $sql = "SELECT * ";
 		$sql .= "FROM ticket_audit_log ";
-        $db->SelectLimit($sql, $cal_number_to_convert, 0);
+	    $rs = $db->SelectLimit($sql, $cal_number_to_convert, 0) or die(__CLASS__ . '('.__LINE__.')'. ':' . $db->ErrorMsg());
 		$logger->info("[Cerb5Blog.com] SQL = " . $sql . " with a limit of " . $cal_number_to_convert);
 		
 		while($row = mysql_fetch_assoc($rs)) {
