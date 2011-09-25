@@ -1,7 +1,7 @@
-<H3>{$translate->_('cerb5blog.auto_close.title')}</H3>
+<H3>{$translate->_('cerb5blog.convert_auditlog.title')}</H3>
 <br>
 
-{$translate->_('cerb5blog.convert_auditlog.config.number_of_records')}{$cal_number_of_records}<br><br>
+{$translate->_('cerb5blog.convert_auditlog.config.number_of_records')}<b>{$cal_number_of_records}</b><br><br>
 
 {$translate->_('cerb5blog.convert_auditlog.config.number_to_convert')}<br>
 <input type="text" name="number_to_convert" maxlength="6" size="4" value="{$cal_number_to_convert}">
