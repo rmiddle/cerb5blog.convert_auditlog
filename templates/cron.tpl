@@ -1,6 +1,3 @@
-<H3>{$translate->_('cerb5blog.convert_auditlog.title')}</H3>
-<br>
-
 {$translate->_('cerb5blog.convert_auditlog.config.number_of_records')}<b>{$cal_number_of_records}</b><br><br>
 
 {$translate->_('cerb5blog.convert_auditlog.config.number_to_convert')}<br>
