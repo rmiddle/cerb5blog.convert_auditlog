@@ -76,7 +76,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
         $db = DevblocksPlatform::getDatabaseService();
         $tables = $db->metaTables();
 
-        if(isset($tables['ticket_audit_log'])) {
+        if(!isset($tables['ticket_audit_log'])) {
             $tpl->display($tpl_path . 'no_audit_log.tpl');
             return;
         }
