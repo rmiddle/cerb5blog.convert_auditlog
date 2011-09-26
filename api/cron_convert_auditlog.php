@@ -19,6 +19,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
         }
         
  		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '100');
+		@$cal_all_enteries = $this->getParam('cal_all_enteries', '1');
 
         $sql = "SELECT * ";
 		$sql .= "FROM ticket_audit_log ";
@@ -81,7 +82,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '100');
 		$tpl->assign('cal_number_to_convert', $cal_number_to_convert);
         
-		@$cal_all_enteries = $this->getParam('cal_all_enteries', '0');
+		@$cal_all_enteries = $this->getParam('cal_all_enteries', '1');
 		$tpl->assign('cal_all_enteries', $cal_all_enteries);
         
 		$tpl->display($tpl_path . 'cron.tpl');
@@ -89,7 +90,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
  
 	function saveConfigurationAction() {
 		@$cal_number_to_convert = DevblocksPlatform::importGPC($_REQUEST['number_to_convert'],'integer',7);
-		@$cal_all_enteries= DevblocksPlatform::importGPC($_REQUEST['cal_all_enteries'],'integer',0);
+		@$cal_all_enteries= DevblocksPlatform::importGPC($_REQUEST['cal_all_enteries'],'integer',1);
 		
 		$this->setParam('cal_number_to_convert', $cal_number_to_convert);
 		$this->setParam('cal_all_enteries', $cal_all_enteries);
