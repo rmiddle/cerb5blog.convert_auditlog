@@ -26,6 +26,15 @@
     <tu tuid='cerb5blog.convert_auditlog.config.number_of_records'>
       <tuv xml:lang="en_US"><seg>Number of records left to convert:</seg></tuv>
     </tu>
+    <tu tuid='cerb5blog.convert_auditlog.config.all_enteries.warn'>
+      <tuv xml:lang="en_US"><seg>Once records are converted there in no going back.  No backup is made.:</seg></tuv>
+    </tu>
+    <tu tuid='cerb5blog.convert_auditlog.config.all_enteries.all'>
+      <tuv xml:lang="en_US"><seg>Convert all records even those not tracked anymore:</seg></tuv>
+    </tu>
+    <tu tuid='cerb5blog.convert_auditlog.config.all_enteries.activity'>
+      <tuv xml:lang="en_US"><seg>Convert only records that are currently tracked under Activity Logs:</seg></tuv>
+    </tu>
     
    <tu tuid='cerb5blog.convert_auditlog.no_audit_log_to_convert'>
       <tuv xml:lang="en_US"><seg>No Ticket Audit Logs Entries to convert.</seg></tuv>
