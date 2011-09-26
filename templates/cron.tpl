@@ -1,4 +1,4 @@
-{$translate->_('cerb5blog.convert_auditlog.config.warn')}
+<h2>{$translate->_('cerb5blog.convert_auditlog.config.warn')}</h2>
 <br>
 <br>
 
