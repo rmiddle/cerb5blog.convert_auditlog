@@ -26,7 +26,7 @@
     <tu tuid='cerb5blog.convert_auditlog.config.number_of_records'>
       <tuv xml:lang="en_US"><seg>Number of records left to convert:</seg></tuv>
     </tu>
-    <tu tuid='cerb5blog.convert_auditlog.config.all_enteries.warn'>
+    <tu tuid='cerb5blog.convert_auditlog.config.warn'>
       <tuv xml:lang="en_US"><seg>Once records are converted there in no going back.  No backup is made.:</seg></tuv>
     </tu>
     <tu tuid='cerb5blog.convert_auditlog.config.all_enteries.all'>
