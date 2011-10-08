@@ -66,7 +66,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 							'worker' => (!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '',
 							),
 						'urls' => array(
-							'target' => 'c=display&mask='.$model[DAO_Ticket::MASK],
+							'target' => 'c=display&mask='.$ticket->mask,
 							)
                         );
                         $actor_context = 'cerberusweb.contexts.group';
