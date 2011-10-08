@@ -45,6 +45,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             switch($change_field) {
                 case 'last_action_code':
                     if (($change_value == "O") || ($change_value == "R")) {
+                        $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type O or R, ticket_id = " . $ticket_id);
                         $save = true;
                         $addy_name = "Unknown";
                         $entry = array(
@@ -59,6 +60,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 )
                             );
                     } else if ($change_value == "W") {
+                        $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type W, ticket_id = " . $ticket_id);
                         $save = true;
                         if ($worker_id) {
                             $worker = DAO_Worker::get($worker_id);
