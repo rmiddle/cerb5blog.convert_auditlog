@@ -59,6 +59,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
                         $entry = array(
 						//{{actor}} assigned ticket {{target}} to worker {{worker}}
+                        'message' => $message
 						'variables' => array(
 							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
 							'group' => sprintf("%s", $ticket_group->name),
