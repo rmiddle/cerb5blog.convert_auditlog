@@ -48,7 +48,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             if ($cal_all_enteries) {
                 switch($change_field) {
                     case 'team_id':
-                        $logger->info("[Cerb5Blog.com] Branch team_id");
+                        $logger->info("[Cerb5Blog.com] Branch team_id, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.group.moved';	
                         if ($worker_id) {
                             $worker = DAO_Worker::get($worker_id);
