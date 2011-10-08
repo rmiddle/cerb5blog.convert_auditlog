@@ -43,7 +43,55 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             $url_writer = DevblocksPlatform::getUrlService();
 
             switch($change_field) {
-                case 'cron.maint':
+                case 'last_action_code':
+                    if (($change_value == "O") || ($change_value == "R")) {
+                        $save = true;
+                        $addy_name = "Unknown";
+                        $entry = array(
+                        	//{{actor}} replied to ticket {{target}}
+                            'message' => 'activities.ticket.message.inbound',
+                            'variables' => array(
+                                'target' => sprintf("[%s]", $ticket->mask),
+                                'actor' => $addy_name,
+                                ),
+                            'urls' => array(
+                                'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                )
+                            );
+                    } else if ($change_value == "W") {
+                        $save = true;
+                        if ($worker_id) {
+                            $worker = DAO_Worker::get($worker_id);
+                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : 'unknown');
+                            $who = sprintf("%d-%s",
+                                $worker->id,
+                                DevblocksPlatform::strToPermalink($worker_name)
+                            ); 
+                        } else {
+                            $worker_name = 'auto';
+                        }
+                        $entry = array(
+                            //{{actor}} responded to ticket {{target}}
+                            'message' => 'activities.ticket.message.outbound',
+                            'variables' => array(
+                                'target' => sprintf("[%s]", $ticket->mask),
+                                'actor' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'actor' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+                                )
+                            );
+                    } else {
+                        // Should never run but just in case 
+                        if ($cal_all_enteries) {
+                            $save = true;
+                        } else {
+                            $save = false;
+                        }
+                    }
+                    $actor_context = 'cerberusweb.contexts.group';
+                    $actor_context_id = $change_value;
                     break;
             }
 
