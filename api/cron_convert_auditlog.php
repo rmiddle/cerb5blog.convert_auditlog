@@ -29,25 +29,63 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 		
 		while($row = mysql_fetch_assoc($rs)) {
 			// Loop though the records.
+            $save = false;
 			$id = intval($row['id']);
+            $logger->info("[Cerb5Blog.com] Processing id: " . $id);
 		    $ticket_id = intval($row['ticket_id']);
-		    $worker_id = intval($row['worker_id']);
+            $ticket = DAO_Ticket::get($ticket_id);
+            $worker_id = intval($row['worker_id']);
 		    $change_date = intval($row['change_date']);
 		    $change_field = $row['change_field'];
 		    $change_value = $row['change_value'];
+            $groups = DAO_Group::getAll();
 
-            $logger->info("[Cerb5Blog.com] Looking at id = " . $id);			
-/*
-            DAO_ContextActivityLog::create(array(
-                DAO_ContextActivityLog::ACTIVITY_POINT => $activity_point,
-                DAO_ContextActivityLog::CREATED => $change_date,
-                DAO_ContextActivityLog::ACTOR_CONTEXT => $actor_context,
-                DAO_ContextActivityLog::ACTOR_CONTEXT_ID =>$actor_context_id,
-                DAO_ContextActivityLog::TARGET_CONTEXT => 'cerberusweb.contexts.ticket',
-                DAO_ContextActivityLog::TARGET_CONTEXT_ID => $id,
-                DAO_ContextActivityLog::ENTRY_JSON => json_encode($entry_array),
-            ));
-*/
+            switch($change_field) {
+                case 'cron.maint':
+                    break;
+            }
+
+            if ($cal_all_enteries) {
+                switch($change_field) {
+                    case 'team_id':
+                        $activity_point = 'ticket.group.moved';	
+                        if ($worker_id) {
+                            $worker = DAO_Worker::get($worker_id);
+                            $message = '{{actor}} ticket {{target}} moved to {{group}} by worker {{worker}}';
+                        } else {
+                            $message = '{{actor}} ticket {{target}} moved to {{group}}';
+                        }
+                        $entry = array(
+						//{{actor}} assigned ticket {{target}} to worker {{worker}}
+						'variables' => array(
+							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
+							'group' => sprintf("%s", $ticket_group->name);,
+							'worker' => (!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '',
+							),
+						'urls' => array(
+							'target' => 'c=display&mask='.$model[DAO_Ticket::MASK],
+							)
+                        );
+                        $actor_context = 'cerberusweb.contexts.group';
+                        $actor_context_id = $change_value
+                        $save = true;
+                        break;
+                    default:
+                        break;
+                }                
+            }
+            if ($save) {
+                DAO_ContextActivityLog::create(array(
+                    DAO_ContextActivityLog::ACTIVITY_POINT => $activity_point,
+                    DAO_ContextActivityLog::CREATED => $change_date,
+                    DAO_ContextActivityLog::ACTOR_CONTEXT => $actor_context,
+                    DAO_ContextActivityLog::ACTOR_CONTEXT_ID =>$actor_context_id,
+                    DAO_ContextActivityLog::TARGET_CONTEXT => 'cerberusweb.contexts.ticket',
+                    DAO_ContextActivityLog::TARGET_CONTEXT_ID => $ticket_id,
+                    DAO_ContextActivityLog::ENTRY_JSON => json_encode($entry),
+                ));
+            }
 		}
 		$logger->info("[Cerb5Blog.com] Finished processing Convert Audit Log Cron Job.");
   }
