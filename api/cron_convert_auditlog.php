@@ -43,6 +43,79 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             $url_writer = DevblocksPlatform::getUrlService();
 
             switch($change_field) {
+                case 'is_waiting':
+                    if ($change_value) {
+                        $status_to = "Waiting for reply";
+                    } else {
+                        $status_to = "Open";
+                    }
+					$entry = array(
+						//{{actor}} changed ticket {{target}} to status {{status}}
+						'message' => 'activities.ticket.status',
+						'variables' => array(
+							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+							'status' => $status_to,
+							),
+						'urls' => array(
+                            'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+							)
+					);
+                    $actor_context = 'cerberusweb.contexts.worker';
+                    if ($worker_id) {
+                        $worker = DAO_Worker::get($worker_id);
+                        $actor_context_id = $worker->id;
+                    } else {
+                        $actor_context_id = 0;
+                    }
+                    break;
+                case 'is_closed':
+                    if ($change_value) {
+                        $status_to = "Closed";
+                    } else {
+                        $status_to = "Open";
+                    }
+                    $entry = array(
+                        //{{actor}} changed ticket {{target}} to status {{status}}
+                        'message' => 'activities.ticket.status',
+                        'variables' => array(
+                            'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            'status' => $status_to,
+                            ),
+                        'urls' => array(
+                            'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                            )
+                    );
+                    $actor_context = 'cerberusweb.contexts.worker';
+                    if ($worker_id) {
+                        $worker = DAO_Worker::get($worker_id);
+                        $actor_context_id = $worker->id;
+                    } else {
+                        $actor_context_id = 0;
+                    }
+                    break;
+                case 'is_deleted':
+                    if ($change_value) {
+                        $status_to = "Deleted";
+                        $entry = array(
+                            //{{actor}} changed ticket {{target}} to status {{status}}
+                            'message' => 'activities.ticket.status',
+                            'variables' => array(
+                                'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                                'status' => $status_to,
+                                ),
+                            'urls' => array(
+                                'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                )
+                        );
+                        $actor_context = 'cerberusweb.contexts.worker';
+                        if ($worker_id) {
+                            $worker = DAO_Worker::get($worker_id);
+                            $actor_context_id = $worker->id;
+                        } else {
+                            $actor_context_id = 0;
+                        }
+                    }
+                    break;
                 case 'last_action_code':
                     if (($change_value == "O") || ($change_value == "R")) {
                         $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type O or R, ticket_id = " . $ticket_id);
