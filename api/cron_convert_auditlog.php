@@ -106,7 +106,6 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     }
                     break;
                 case 'is_deleted':
-                ticket.status.open
                     $logger->info("[Cerb5Blog.com] Audit_log processing is_deleted, ticket_id = " . $ticket_id);
                     if ($change_value) {
                         $logger->info("[Cerb5Blog.com] Audit_log Status set to deleted, ticket_id = " . $ticket_id);
