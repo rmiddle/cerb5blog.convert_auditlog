@@ -46,8 +46,8 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                 case 'last_action_code':
                     if (($change_value == "O") || ($change_value == "R")) {
                         $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type O or R, ticket_id = " . $ticket_id);
-                        $save = true;
                         $activity_point = 'ticket.message.inbound';	
+                        $save = true;
                         $addy_name = "Unknown";
                         $entry = array(
                         	//{{actor}} replied to ticket {{target}}
@@ -60,6 +60,8 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
                                 )
                             );
+                        $actor_context = 'cerberusweb.contexts.address';
+                        $actor_context_id = 0;
                     } else if ($change_value == "W") {
                         $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type W, ticket_id = " . $ticket_id);
                         $save = true;
@@ -86,16 +88,32 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 'actor' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
                                 )
                             );
+                        $actor_context = 'cerberusweb.contexts.group';
+                        $actor_context_id = 0;
                     } else {
                         // Should never run but just in case 
                         if ($cal_all_enteries) {
+                            $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type Unknown, ticket_id = " . $ticket_id);
+                            $activity_point = 'ticket.message.inbound';	
                             $save = true;
+                            $addy_name = "Unknown";
+                            $entry = array(
+                                //{{actor}} replied to ticket {{target}}
+                                'message' => 'activities.ticket.message.inbound',
+                                'variables' => array(
+                                    'target' => sprintf("[%s]", $ticket->mask),
+                                    'actor' => $addy_name,
+                                    ),
+                                'urls' => array(
+                                    'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    )
+                                );
+                            $actor_context = 'cerberusweb.contexts.address';
+                            $actor_context_id = 0;
                         } else {
                             $save = false;
                         }
                     }
-                    $actor_context = 'cerberusweb.contexts.group';
-                    $actor_context_id = $change_value;
                     break;
             }
 
@@ -104,6 +122,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     case 'team_id':
                         $logger->info("[Cerb5Blog.com] Audit_log team_id processed, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.group.moved';	
+                        $save = true;
                         if ($worker_id) {
                             $worker = DAO_Worker::get($worker_id);
                             $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '');
@@ -118,24 +137,24 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         }
                         @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
                         $entry = array(
-                        'message' => $message,
-						'variables' => array(
-							'ticket' => sprintf("[%s]", $ticket->mask),
-							'group' => sprintf("%s", $ticket_group->name),
-							'worker' => $worker_name,
-							),
-						'urls' => array(
-							'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-							'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
-							)
-                        );
+                            'message' => $message,
+                            'variables' => array(
+                                'ticket' => sprintf("[%s]", $ticket->mask),
+                                'group' => sprintf("%s", $ticket_group->name),
+                                'worker' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+                                )
+                            );
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $change_value;
-                        $save = true;
                         break;
                     case 'category_id':
                         $logger->info("[Cerb5Blog.com] Audit_log category_id processed, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.bucket.moved';	
+                        $save = true;
                         if ($worker_id) {
                             $worker = DAO_Worker::get($worker_id);
                             $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '(auto)');
@@ -155,21 +174,37 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             $bucket_name = "Inbox";
                         }
                         $entry = array(
-                        'message' => $message,
-						'variables' => array(
-							'ticket' => sprintf("[%s]", $ticket->mask),
-							'bucket' => sprintf("%s", $bucket_name),
-							'worker' => $worker_name,
-							),
-						'urls' => array(
-							'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-							'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
-							)
-                        );
+                            'message' => $message,
+                            'variables' => array(
+                                'ticket' => sprintf("[%s]", $ticket->mask),
+                                'bucket' => sprintf("%s", $bucket_name),
+                                'worker' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+                                )
+                            );
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $change_value;
+                        break; 
+                    case 'spam_score':
+                        $logger->info("[Cerb5Blog.com] Audit_log category_id processed, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.custom.spam_score';	
                         $save = true;
-                        break;                        
+                        $entry = array(
+                            //{{actor}} replied to ticket {{target}}
+                            'message' => 'Ticket ({{target}}) Spam Score is {{spam_score}}',
+                                'variables' => array(
+                                    'target' => sprintf("[%s]", $ticket->mask),
+                                    'spam_score' => sprintf("[%d]", $change_value),
+                                    ),
+                                'urls' => array(
+                                    'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    )
+                                );
+                        $actor_context = 'cerberusweb.contexts.group';
+                        $actor_context_id = $ticket->group_id;
                     default:
                         break;
                 }                
