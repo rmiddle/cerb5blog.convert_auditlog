@@ -55,12 +55,12 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         } else {
                             $message = '{{actor}} ticket {{target}} moved to {{group}}';
                         }
+                        @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
                         $entry = array(
 						//{{actor}} assigned ticket {{target}} to worker {{worker}}
 						'variables' => array(
 							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
-                            @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
-							'group' => sprintf("%s", $ticket_group->name);,
+							'group' => sprintf("%s", $ticket_group->name).
 							'worker' => (!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '',
 							),
 						'urls' => array(
