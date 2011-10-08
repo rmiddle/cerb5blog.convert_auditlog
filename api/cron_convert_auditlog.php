@@ -39,6 +39,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 		    $change_field = $row['change_field'];
 		    $change_value = $row['change_value'];
             $groups = DAO_Group::getAll();
+            $url_writer = DevblocksPlatform::getUrlService();
 
             switch($change_field) {
                 case 'cron.maint':
@@ -52,21 +53,27 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.group.moved';	
                         if ($worker_id) {
                             $worker = DAO_Worker::get($worker_id);
+                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '');
+                       		$who = sprintf("%d-%s",
+                                $worker->id,
+                                DevblocksPlatform::strToPermalink($worker_name)
+                            ); 
                             $message = '{{actor}} ticket {{target}} moved to {{group}} by worker {{worker}}';
                         } else {
+                            $worker_name = '';
                             $message = '{{actor}} ticket {{target}} moved to {{group}}';
                         }
                         @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
                         $entry = array(
-						//{{actor}} assigned ticket {{target}} to worker {{worker}}
                         'message' => $message,
 						'variables' => array(
 							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
 							'group' => sprintf("%s", $ticket_group->name),
-							'worker' => (!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '',
+							'worker' => $worker_name,
 							),
 						'urls' => array(
 							'target' => 'c=display&mask='.$ticket->mask,
+							'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
 							)
                         );
                         $actor_context = 'cerberusweb.contexts.group';
@@ -77,7 +84,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         break;
                 }                
             }
-            if ($save) {
+            if ($save == true) {
                 DAO_ContextActivityLog::create(array(
                     DAO_ContextActivityLog::ACTIVITY_POINT => $activity_point,
                     DAO_ContextActivityLog::CREATED => $change_date,
