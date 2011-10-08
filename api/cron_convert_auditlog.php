@@ -205,6 +205,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 );
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $ticket->group_id;
+                        break;
                     case 'subject':
                         $logger->info("[Cerb5Blog.com] Audit_log subject processed, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.custom.subject';	
@@ -235,6 +236,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             );
                         $actor_context = 'cerberusweb.contexts.worker';
                         $actor_context_id = $worker_id;
+                        break;
                     default:
                         break;
                 }                
