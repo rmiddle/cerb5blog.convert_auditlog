@@ -189,18 +189,18 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $actor_context_id = $change_value;
                         break; 
                     case 'spam_score':
-                        $logger->info("[Cerb5Blog.com] Audit_log category_id processed, ticket_id = " . $ticket_id);
+                        $logger->info("[Cerb5Blog.com] Audit_log spam_score processed, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.custom.spam_score';	
                         $save = true;
                         $entry = array(
                             //{{actor}} replied to ticket {{target}}
-                            'message' => 'Ticket ({{target}}) Spam Score is {{spam_score}}',
+                            'message' => 'Ticket {{ticket}} Spam Score is {{spam_score}}',
                                 'variables' => array(
-                                    'target' => sprintf("[%s]", $ticket->mask),
-                                    'spam_score' => sprintf("[%d]", $change_value),
+                                    'ticket' => sprintf("[%s]", $ticket->mask),
+                                    'spam_score' => sprintf("(%s)", $change_value),
                                     ),
                                 'urls' => array(
-                                    'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
                                     )
                                 );
                         $actor_context = 'cerberusweb.contexts.group';
