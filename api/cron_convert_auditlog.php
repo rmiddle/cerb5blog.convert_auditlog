@@ -58,21 +58,21 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 $worker->id,
                                 DevblocksPlatform::strToPermalink($worker_name)
                             ); 
-                            $message = '{{worker}} moved ticket {{target}} to {{group}}';
+                            $message = '{{worker}} moved ticket {{ticket}} to {{group}}';
                         } else {
                             $worker_name = '';
-                            $message = 'The System Moved ticket {{target}} to {{group}}';
+                            $message = 'The System Moved ticket {{ticket}} to {{group}}';
                         }
                         @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
                         $entry = array(
                         'message' => $message,
 						'variables' => array(
-							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+							'ticket' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
 							'group' => sprintf("%s", $ticket_group->name),
 							'worker' => $worker_name,
 							),
 						'urls' => array(
-							'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+							'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
 							'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
 							)
                         );
