@@ -205,6 +205,36 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 );
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $ticket->group_id;
+                    case 'subject':
+                        $logger->info("[Cerb5Blog.com] Audit_log subject processed, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.custom.subject';	
+                        $save = true;
+                        if ($worker_id) {
+                            $worker = DAO_Worker::get($worker_id);
+                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '(auto)');
+                       		$who = sprintf("%d-%s",
+                                $worker->id,
+                                DevblocksPlatform::strToPermalink($worker_name)
+                            ); 
+                            $message = 'Ticket {{ticket}} subject changed to  {{subject}} by {{worker}}';
+                        } else {
+                            $worker_name = '';
+                            $message = 'Ticket {{ticket}} subject changed to  {{subject}} by auto';
+                        }
+                        $entry = array(
+                            'message' => $message,
+                            'variables' => array(
+                                'ticket' => sprintf("[%s]", $ticket->mask),
+                                'subject' => sprintf("\"%s\"", $change_value),
+                                'worker' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+                                )
+                            );
+                        $actor_context = 'cerberusweb.contexts.worker';
+                        $actor_context_id = $worker_id;
                     default:
                         break;
                 }                
