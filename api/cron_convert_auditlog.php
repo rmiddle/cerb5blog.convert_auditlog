@@ -235,7 +235,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 )
                             );
                         $actor_context = 'cerberusweb.contexts.worker';
-                        $actor_context_id = $worker_id;
+                        $actor_context_id = $worker->id;
                         break;
                     default:
                         break;
@@ -246,7 +246,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     DAO_ContextActivityLog::ACTIVITY_POINT => $activity_point,
                     DAO_ContextActivityLog::CREATED => $change_date,
                     DAO_ContextActivityLog::ACTOR_CONTEXT => $actor_context,
-                    DAO_ContextActivityLog::ACTOR_CONTEXT_ID =>$actor_context_id,
+                    DAO_ContextActivityLog::ACTOR_CONTEXT_ID => $actor_context_id,
                     DAO_ContextActivityLog::TARGET_CONTEXT => 'cerberusweb.contexts.ticket',
                     DAO_ContextActivityLog::TARGET_CONTEXT_ID => $ticket_id,
                     DAO_ContextActivityLog::ENTRY_JSON => json_encode($entry),
