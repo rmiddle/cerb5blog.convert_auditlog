@@ -44,10 +44,16 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 
             switch($change_field) {
                 case 'is_waiting':
+                    $logger->info("[Cerb5Blog.com] Audit_log processing is_waiting, ticket_id = " . $ticket_id);
+                    $save = true;
                     if ($change_value) {
                         $status_to = "Waiting for reply";
+                        $activity_point = 'ticket.status.waiting';	
+                        $logger->info("[Cerb5Blog.com] Audit_log Status set to waiting for reply, ticket_id = " . $ticket_id);
                     } else {
                         $status_to = "Open";
+                        $activity_point = 'ticket.status.open';	
+                        $logger->info("[Cerb5Blog.com] Audit_log Status set to open, ticket_id = " . $ticket_id);
                     }
 					$entry = array(
 						//{{actor}} changed ticket {{target}} to status {{status}}
@@ -69,10 +75,16 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     }
                     break;
                 case 'is_closed':
+                    $logger->info("[Cerb5Blog.com] Audit_log processing is_closed, ticket_id = " . $ticket_id);
+                    $save = true;
                     if ($change_value) {
                         $status_to = "Closed";
+                        $activity_point = 'ticket.status.closed';	
+                        $logger->info("[Cerb5Blog.com] Audit_log Status set to closed, ticket_id = " . $ticket_id);
                     } else {
                         $status_to = "Open";
+                        $activity_point = 'ticket.status.open';	
+                        $logger->info("[Cerb5Blog.com] Audit_log Status set to open, ticket_id = " . $ticket_id);
                     }
                     $entry = array(
                         //{{actor}} changed ticket {{target}} to status {{status}}
@@ -94,7 +106,12 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     }
                     break;
                 case 'is_deleted':
+                ticket.status.open
+                    $logger->info("[Cerb5Blog.com] Audit_log processing is_deleted, ticket_id = " . $ticket_id);
                     if ($change_value) {
+                        $logger->info("[Cerb5Blog.com] Audit_log Status set to deleted, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.status.deleted';	
+                        $save = true;
                         $status_to = "Deleted";
                         $entry = array(
                             //{{actor}} changed ticket {{target}} to status {{status}}
