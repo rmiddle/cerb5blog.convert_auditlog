@@ -67,7 +67,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $entry = array(
                         'message' => $message,
 						'variables' => array(
-							'ticket' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+							'ticket' => sprintf("[%s]", $ticket->mask),
 							'group' => sprintf("%s", $ticket_group->name),
 							'worker' => $worker_name,
 							),
