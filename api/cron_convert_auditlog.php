@@ -60,7 +60,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 						//{{actor}} assigned ticket {{target}} to worker {{worker}}
 						'variables' => array(
 							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
-							'group' => sprintf("%s", $ticket_group->name).
+							'group' => sprintf("%s", $ticket_group->name),
 							'worker' => (!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '',
 							),
 						'urls' => array(
@@ -88,7 +88,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             }
 		}
 		$logger->info("[Cerb5Blog.com] Finished processing Convert Audit Log Cron Job.");
-  }
+    }
  
 	function configure($instance) {
 		$tpl = DevblocksPlatform::getTemplateService();
