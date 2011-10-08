@@ -39,6 +39,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 		    $change_field = $row['change_field'];
 		    $change_value = $row['change_value'];
             $groups = DAO_Group::getAll();
+            $buckets = DAO_Bucket::getAll();
             $url_writer = DevblocksPlatform::getUrlService();
 
             switch($change_field) {
@@ -49,7 +50,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             if ($cal_all_enteries) {
                 switch($change_field) {
                     case 'team_id':
-                        $logger->info("[Cerb5Blog.com] Branch team_id, ticket_id = " . $ticket_id);
+                        $logger->info("[Cerb5Blog.com] Audit_log team_id processed, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.group.moved';	
                         if ($worker_id) {
                             $worker = DAO_Worker::get($worker_id);
@@ -58,10 +59,10 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 $worker->id,
                                 DevblocksPlatform::strToPermalink($worker_name)
                             ); 
-                            $message = '{{worker}} moved ticket {{ticket}} to {{group}}';
+                            $message = '{{worker}} moved ticket ({{ticket}}) to group ({{group}})';
                         } else {
                             $worker_name = '';
-                            $message = 'The System Moved ticket {{ticket}} to {{group}}';
+                            $message = 'The System moved ticket ({{ticket}}) to group ({{group}})';
                         }
                         @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
                         $entry = array(
@@ -80,6 +81,38 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $actor_context_id = $change_value;
                         $save = true;
                         break;
+                    case 'category_id':
+                        $logger->info("[Cerb5Blog.com] Audit_log category_id processed, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.bucket.moved';	
+                        if ($worker_id) {
+                            $worker = DAO_Worker::get($worker_id);
+                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '(auto)');
+                       		$who = sprintf("%d-%s",
+                                $worker->id,
+                                DevblocksPlatform::strToPermalink($worker_name)
+                            ); 
+                            $message = '{{worker}} moved ticket ({{ticket}}) to bucket ({{bucket}})';
+                        } else {
+                            $worker_name = '';
+                            $message = 'The System moved ticket ({{ticket}}) to bucket ({{bucket}})';
+                        }
+                        @$ticket_bucket = $buckets[$change_value]; /* @var $ticket_group Model_Group */
+                        $entry = array(
+                        'message' => $message,
+						'variables' => array(
+							'ticket' => sprintf("[%s]", $ticket->mask),
+							'bucket' => sprintf("%s", $ticket_bucket->name),
+							'worker' => $worker_name,
+							),
+						'urls' => array(
+							'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+							'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+							)
+                        );
+                        $actor_context = 'cerberusweb.contexts.group';
+                        $actor_context_id = $change_value;
+                        $save = true;
+                        break;                        
                     default:
                         break;
                 }                
@@ -95,6 +128,8 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     DAO_ContextActivityLog::ENTRY_JSON => json_encode($entry),
                 ));
             }
+            $logger->info("[Cerb5Blog.com] Removing id: " . $id);
+            //$db->Execute(sprintf("DELETE QUICK FROM ticket_audit_log WHERE id = (%d)", $id));
 		}
 		$logger->info("[Cerb5Blog.com] Finished processing Convert Audit Log Cron Job.");
     }
