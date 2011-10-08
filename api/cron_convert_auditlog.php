@@ -68,7 +68,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 							)
                         );
                         $actor_context = 'cerberusweb.contexts.group';
-                        $actor_context_id = $change_value
+                        $actor_context_id = $change_value;
                         $save = true;
                         break;
                     default:
