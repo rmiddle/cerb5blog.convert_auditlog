@@ -96,12 +96,17 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             $worker_name = '';
                             $message = 'The System moved ticket ({{ticket}}) to bucket ({{bucket}})';
                         }
-                        @$ticket_bucket = $buckets[$change_value]; /* @var $ticket_group Model_Group */
+                        if ($change_value) {
+                            @$ticket_bucket = $buckets[$change_value]; /* @var $ticket_group Model_Group */
+                            $bucket_name = $ticket_bucket->name;
+                        } else {
+                            $bucket_name = "Inbox";
+                        }
                         $entry = array(
                         'message' => $message,
 						'variables' => array(
 							'ticket' => sprintf("[%s]", $ticket->mask),
-							'bucket' => sprintf("%s", $ticket_bucket->name),
+							'bucket' => sprintf("%s", $bucket_name),
 							'worker' => $worker_name,
 							),
 						'urls' => array(
