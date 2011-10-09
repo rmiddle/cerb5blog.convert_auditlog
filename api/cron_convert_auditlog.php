@@ -317,7 +317,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             'message' => $message,
                             'variables' => array(
                                 'ticket' => sprintf("[%s]", $ticket->mask),
-                                'due_date' = sprintf("%s", $change_value),
+                                'due_date' => sprintf("%s", $change_value),
                                 'worker' => $worker_name,
                                 ),
                             'urls' => array(
