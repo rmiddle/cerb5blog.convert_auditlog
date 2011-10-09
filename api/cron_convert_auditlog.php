@@ -36,7 +36,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             $ticket = DAO_Ticket::get($ticket_id);
             $worker_id = intval($row['worker_id']);
             $worker = DAO_Worker::get($worker_id);
-            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : 'unknown');            
+            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '(auto)');            
 		    $change_date = intval($row['change_date']);
 		    $change_field = $row['change_field'];
 		    $change_value = $row['change_value'];
@@ -164,16 +164,6 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $logger->info("[Cerb5Blog.com] Audit_log processing last_action_code type W, ticket_id = " . $ticket_id);
                         $save = true;
                         $activity_point = 'ticket.message.outbound';	
-                        if ($worker_id) {
-                            $worker = DAO_Worker::get($worker_id);
-                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : 'unknown');
-                            $who = sprintf("%d-%s",
-                                $worker->id,
-                                DevblocksPlatform::strToPermalink($worker_name)
-                            ); 
-                        } else {
-                            $worker_name = 'auto';
-                        }
                         $entry = array(
                             //{{actor}} responded to ticket {{target}}
                             'message' => 'activities.ticket.message.outbound',
@@ -222,15 +212,8 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.group.moved';	
                         $save = true;
                         if ($worker_id) {
-                            $worker = DAO_Worker::get($worker_id);
-                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '');
-                       		$who = sprintf("%d-%s",
-                                $worker->id,
-                                DevblocksPlatform::strToPermalink($worker_name)
-                            ); 
                             $message = '{{worker}} moved ticket ({{ticket}}) to group ({{group}})';
                         } else {
-                            $worker_name = '';
                             $message = 'The System moved ticket ({{ticket}}) to group ({{group}})';
                         }
                         @$ticket_group = $groups[$change_value]; /* @var $ticket_group Model_Group */
@@ -254,15 +237,8 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.bucket.moved';	
                         $save = true;
                         if ($worker_id) {
-                            $worker = DAO_Worker::get($worker_id);
-                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '(auto)');
-                       		$who = sprintf("%d-%s",
-                                $worker->id,
-                                DevblocksPlatform::strToPermalink($worker_name)
-                            ); 
                             $message = '{{worker}} moved ticket ({{ticket}}) to bucket ({{bucket}})';
                         } else {
-                            $worker_name = '';
                             $message = 'The System moved ticket ({{ticket}}) to bucket ({{bucket}})';
                         }
                         if ($change_value) {
@@ -309,15 +285,8 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.custom.subject';	
                         $save = true;
                         if ($worker_id) {
-                            $worker = DAO_Worker::get($worker_id);
-                            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : '(auto)');
-                       		$who = sprintf("%d-%s",
-                                $worker->id,
-                                DevblocksPlatform::strToPermalink($worker_name)
-                            ); 
                             $message = 'Ticket {{ticket}} subject changed to  {{subject}} by {{worker}}';
                         } else {
-                            $worker_name = '';
                             $message = 'Ticket {{ticket}} subject changed to  {{subject}} by auto';
                         }
                         $entry = array(
@@ -325,6 +294,30 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             'variables' => array(
                                 'ticket' => sprintf("[%s]", $ticket->mask),
                                 'subject' => sprintf("\"%s\"", $change_value),
+                                'worker' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'worker' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+                                )
+                            );
+                        $actor_context = 'cerberusweb.contexts.worker';
+                        $actor_context_id = $worker->id;
+                        break;
+                    case 'due_date':
+                        $logger->info("[Cerb5Blog.com] Audit_log due_date processed, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.custom.due_date';	
+                        $save = true;
+                        if ($change_value) {
+                            $message = 'Ticket {{ticket}} due date change to {{due date}} by {{worker}}';
+                        }else {
+                            $message = 'Ticket {{ticket}} due date removed by {{worker}}';
+                        }
+                        $entry = array(
+                            'message' => $message,
+                            'variables' => array(
+                                'ticket' => sprintf("[%s]", $ticket->mask),
+                                'due_date' = sprintf("%s", $change_value),
                                 'worker' => $worker_name,
                                 ),
                             'urls' => array(
