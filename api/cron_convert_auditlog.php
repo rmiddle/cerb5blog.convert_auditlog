@@ -305,7 +305,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $actor_context_id = $worker->id;
                         break;
                     case 'due_date':
-                        $logger->info("[Cerb5Blog.com] Audit_log due_date processed, ticket_id = " . $ticket_id);
+                        $logger->info("[Cerb5Blog.com] Audit_log due_date processed, ticket_id = " . $ticket_id . " Due Date: " . $change_value);
                         $activity_point = 'ticket.custom.due_date';	
                         $save = true;
                         if ($change_value) {
