@@ -35,12 +35,18 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 		    $ticket_id = intval($row['ticket_id']);
             $ticket = DAO_Ticket::get($ticket_id);
             $worker_id = intval($row['worker_id']);
+            $worker = DAO_Worker::get($worker_id);
+            $worker_name = ((!empty($worker) && $worker instanceof Model_Worker) ? $worker->getName() : 'unknown');            
 		    $change_date = intval($row['change_date']);
 		    $change_field = $row['change_field'];
 		    $change_value = $row['change_value'];
             $groups = DAO_Group::getAll();
             $buckets = DAO_Bucket::getAll();
             $url_writer = DevblocksPlatform::getUrlService();
+            $who = sprintf("%d-%s",
+                $worker->id,
+                DevblocksPlatform::strToPermalink($worker_name)
+                );
 
             switch($change_field) {
                 case 'is_waiting':
@@ -60,19 +66,20 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 						'message' => 'activities.ticket.status',
 						'variables' => array(
 							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            'actor' => $worker_name,
 							'status' => $status_to,
 							),
 						'urls' => array(
-                            'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                           'target' => ('c=display&mask=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
 							)
 					);
-                    $actor_context = 'cerberusweb.contexts.worker';
                     if ($worker_id) {
-                        $worker = DAO_Worker::get($worker_id);
                         $actor_context_id = $worker->id;
                     } else {
                         $actor_context_id = 0;
                     }
+                    $actor_context = 'cerberusweb.contexts.worker';
                     break;
                 case 'is_closed':
                     $logger->info("[Cerb5Blog.com] Audit_log processing is_closed, ticket_id = " . $ticket_id);
@@ -86,20 +93,21 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.status.open';	
                         $logger->info("[Cerb5Blog.com] Audit_log Status set to open, ticket_id = " . $ticket_id);
                     }
-                    $entry = array(
-                        //{{actor}} changed ticket {{target}} to status {{status}}
-                        'message' => 'activities.ticket.status',
-                        'variables' => array(
-                            'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
-                            'status' => $status_to,
-                            ),
-                        'urls' => array(
-                            'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-                            )
-                    );
+					$entry = array(
+						//{{actor}} changed ticket {{target}} to status {{status}}
+						'message' => 'activities.ticket.status',
+						'variables' => array(
+							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            'actor' => $worker_name,
+							'status' => $status_to,
+							),
+						'urls' => array(
+                           'target' => ('c=display&mask=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+							)
+					);
                     $actor_context = 'cerberusweb.contexts.worker';
                     if ($worker_id) {
-                        $worker = DAO_Worker::get($worker_id);
                         $actor_context_id = $worker->id;
                     } else {
                         $actor_context_id = 0;
@@ -112,20 +120,21 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.status.deleted';	
                         $save = true;
                         $status_to = "Deleted";
-                        $entry = array(
-                            //{{actor}} changed ticket {{target}} to status {{status}}
-                            'message' => 'activities.ticket.status',
-                            'variables' => array(
-                                'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
-                                'status' => $status_to,
-                                ),
-                            'urls' => array(
-                                'target' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-                                )
-                        );
+					$entry = array(
+						//{{actor}} changed ticket {{target}} to status {{status}}
+						'message' => 'activities.ticket.status',
+						'variables' => array(
+							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            'actor' => $worker_name,
+							'status' => $status_to,
+							),
+						'urls' => array(
+                           'target' => ('c=display&mask=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+							)
+					);
                         $actor_context = 'cerberusweb.contexts.worker';
                         if ($worker_id) {
-                            $worker = DAO_Worker::get($worker_id);
                             $actor_context_id = $worker->id;
                         } else {
                             $actor_context_id = 0;
