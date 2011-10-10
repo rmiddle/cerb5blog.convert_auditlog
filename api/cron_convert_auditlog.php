@@ -18,7 +18,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             return;
         }
         
- 		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '100');
+ 		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '1000');
 		@$cal_all_enteries = $this->getParam('cal_all_enteries', '1');
 
         $sql = "SELECT * ";
@@ -528,7 +528,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
             return;
         }
         
-		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '100');
+		@$cal_number_to_convert = $this->getParam('cal_number_to_convert', '1000');
 		$tpl->assign('cal_number_to_convert', $cal_number_to_convert);
         
 		@$cal_all_enteries = $this->getParam('cal_all_enteries', '1');
