@@ -31,7 +31,6 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 			// Loop though the records.
             $save = false;
 			$id = intval($row['id']);
-            $logger->info("[Cerb5Blog.com] Processing Audit Log id: " . $id . " TIcket Id: " . $ticket_id);
 		    $ticket_id = intval($row['ticket_id']);
             $ticket = DAO_Ticket::get($ticket_id);
             $worker_id = intval($row['worker_id']);
@@ -47,6 +46,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                 $worker->id,
                 DevblocksPlatform::strToPermalink($worker_name)
                 );
+            $logger->info("[Cerb5Blog.com] Processing Audit Log id: " . $id . " TIcket Id: " . $ticket_id);
 
             switch($change_field) {
                 case 'next_worker_id':
