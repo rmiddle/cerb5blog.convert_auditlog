@@ -49,6 +49,43 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                 );
 
             switch($change_field) {
+                case 'next_worker_id':
+                    $logger->info("[Cerb5Blog.com] Audit_log processing next_worker_id, ticket_id = " . $ticket_id);
+                    $save = true;
+                    if ($change_value) {
+                        $activity_point = 'watcher.assigned';	
+                        $watcher = DAO_Worker::get($change_value);
+                        $watcher_name = ((!empty($watcher) && $watcher instanceof Model_Worker) ? $watcher->getName() : '(auto)');
+                        $logger->info("[Cerb5Blog.com] Audit_log next_worker_id, ticket_id = " . $ticket_id . " watcher_name = " . $watcher_name);
+                        //{{actor}} added {{watcher}} as a watcher to {{target_object}} {{target}}
+                        $message = "activities.watcher.assigned";
+                    } else {
+                        $activity_point = "watcher.unassigned";	
+                        $logger->info("[Cerb5Blog.com] Audit_log next_worker_id worker removed, ticket_id = " . $ticket_id);
+                        $watcher_name = "Unknown";
+                        //{{actor}} removed {{watcher}} as a watcher from {{target_object}} {{target}}
+                        $message = "activities.watcher.unassigned";
+                    }
+					$entry = array(
+						'message' => $message,
+						'variables' => array(
+							'target' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            'actor' => $worker_name,
+                            'target_object' => "Ticket ",
+							'watcher' => $watcher_name,
+							),
+						'urls' => array(
+                           'target' => ('c=display&mask=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+							)
+					);
+                    if ($worker_id) {
+                        $actor_context_id = $worker->id;
+                    } else {
+                        $actor_context_id = 0;
+                    }
+                    $actor_context = 'cerberusweb.contexts.worker';
+                    break;
                 case 'is_waiting':
                     $logger->info("[Cerb5Blog.com] Audit_log processing is_waiting, ticket_id = " . $ticket_id);
                     $save = true;
@@ -139,6 +176,57 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         } else {
                             $actor_context_id = 0;
                         }
+                    }
+                    break;
+                case 'cerb5blog.last_action_and_audit_log.type.merge':
+                    $logger->info("[Cerb5Blog.com] Audit_log processing cerb5blog.last_action_and_audit_log.type.merge, ticket_id = " . $ticket_id);
+                    $activity_point = 'ticket.merge';
+                    $save = true;
+                    $entry = array(
+                        //{{actor}} merged ticket {{source}} with ticket {{target}}
+                        'message' => 'activities.ticket.merge',
+                        'variables' => array(
+                            'source' => sprintf("[%s] %s", $ticket->mask, $ticket->subject),
+                            'actor' => $worker_name,
+                            'target' => sprintf("%s", $change_value),
+                            ),
+                        'urls' => array(
+                            'source' => 'c=display&mask='.$ticket->mask,
+                            'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+                            )
+                    );                    
+                    $actor_context = 'cerberusweb.contexts.worker';
+                    if ($worker_id) {
+                        $actor_context_id = $worker->id;
+                    } else {
+                        $actor_context_id = 0;
+                    }
+                    break;
+                case 'answernet.last_action_and_audit_log.type.comment':
+                    $logger->info("[Cerb5Blog.com] Audit_log processing answernet.last_action_and_audit_log.type.comment = " . $ticket_id);
+                    $activity_point = 'comment.create';
+                    $save = true;
+               		$context = DevblocksPlatform::getExtension('cerberusweb.contexts.ticket', true); /* @var $context Extension_DevblocksContext */
+                    $meta = $context->getMeta($ticket->id);
+
+                    $entry = array(
+                        //{{actor}} commented on {{object}} {{target}}: {{content}}
+                        'message' => 'activities.comment.create',
+                        'variables' => array(
+                            'object' => mb_convert_case($context->manifest->name, MB_CASE_LOWER),
+                            'target' => $meta['name'],
+                            'actor' => $addy_name,
+                            'content' => $change_value,
+                        ),
+                        'urls' => array(
+                            'actor' => $url_writer->writeNoProxy('c=profiles&type=worker&who='.$who, true),
+                        )
+                    );
+                    $actor_context = 'cerberusweb.contexts.worker';
+                    if ($worker_id) {
+                        $actor_context_id = $worker->id;
+                    } else {
+                        $actor_context_id = 0;
                     }
                     break;
                 case 'last_action_code':
@@ -280,6 +368,29 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $ticket->group_id;
                         break;
+                    case 'spam_training':
+                        $logger->info("[Cerb5Blog.com] Audit_log spam_training processed, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.custom.spam_training';	
+                        $save = true;
+                        if ($change_value == 'N') {
+                            $spam_training = "Not Spam";
+                        } else {
+                            $spam_training = "Spam";
+                        }
+                        $entry = array(
+                            //{{actor}} replied to ticket {{target}}
+                            'message' => 'Ticket {{ticket}} trained to {{spam_training}}',
+                                'variables' => array(
+                                    'ticket' => sprintf("[%s]", $ticket->mask),
+                                    'spam_training' => sprintf("(%s)", $spam_training),
+                                    ),
+                                'urls' => array(
+                                    'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    )
+                                );
+                        $actor_context = 'cerberusweb.contexts.group';
+                        $actor_context_id = $ticket->group_id;
+                        break;
                     case 'subject':
                         $logger->info("[Cerb5Blog.com] Audit_log subject processed, ticket_id = " . $ticket_id);
                         $activity_point = 'ticket.custom.subject';	
@@ -309,15 +420,15 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $activity_point = 'ticket.custom.due_date';	
                         $save = true;
                         if ($change_value != 0) {
-                            $message = 'Ticket {{ticket}} due date change to {{due date}} by {{worker}}';
+                            $message = "Ticket {{ticket}} due date change to {{due_date}} by {{worker}}";
                         }else {
-                            $message = 'Ticket {{ticket}} due date removed by {{worker}}';
+                            $message = "Ticket {{ticket}} due date removed by {{worker}}";
                         }
                         $entry = array(
                             'message' => $message,
                             'variables' => array(
                                 'ticket' => sprintf("[%s]", $ticket->mask),
-                                'due_date' => sprintf("%s", $change_value),
+                                'due_date' => sprintf("%s", date('Y-m-d H:i:s', $change_value)),
                                 'worker' => $worker_name,
                                 ),
                             'urls' => array(
@@ -328,7 +439,43 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $actor_context = 'cerberusweb.contexts.worker';
                         $actor_context_id = $worker->id;
                         break;
+                    case 'created_date':
+                        $logger->info("[Cerb5Blog.com] Audit_log created_date processed, ticket_id = " . $ticket_id);
+                        $activity_point = 'ticket.custom.spam_score';	
+                        $save = true;
+                        $entry = array(
+                            //{{actor}} replied to ticket {{target}}
+                            'message' => 'Ticket {{ticket}} created at {{created_date}}',
+                                'variables' => array(
+                                    'ticket' => sprintf("[%s]", $ticket->mask),
+                                    'created_date' => sprintf("(%s)", date('Y-m-d H:i:s', $change_value)),
+                                    ),
+                                'urls' => array(
+                                    'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    )
+                                );
+                        $actor_context = 'cerberusweb.contexts.group';
+                        $actor_context_id = $ticket->group_id;
+                        break;
                     default:
+                        if ($save == false) {
+                            $logger->info("[Cerb5Blog.com] Audit_log default processed, ticket_id = " . $ticket_id);
+                            $activity_point = 'ticket.custom.default';	
+                            $save = true;
+                            $entry = array(
+                                'message' => 'Ticket {{ticket}}: {{change_field}} - {{change_value}}',
+                                'variables' => array(
+                                    'ticket' => sprintf("[%s]", $ticket->mask),
+                                    'change_value' => sprintf("(%s)", $change_value),
+                                    'change_field' => sprintf("(%s)", $change_field),
+                                    ),
+                                'urls' => array(
+                                    'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    )
+                                );
+                            $actor_context = 'cerberusweb.contexts.group';
+                            $actor_context_id = $ticket->group_id;
+                        }
                         break;
                 }                
             }
