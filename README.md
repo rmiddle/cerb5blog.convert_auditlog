@@ -1,6 +1,3 @@
-Warning not yet ready for use
-------------
-
 Cerb5 Plugins - cerb5blog.convert_auditlog
 ===========================================
 Copyright (C) 2011 Robert Middleswarth
@@ -8,9 +5,10 @@ Copyright (C) 2011 Robert Middleswarth
 
 What's this?
 ------------
-Converts Cerberus 5.3 Audit log entires to 5.5 or greater Activity Log entires
+Converts Cerberus Audit log entires to Activity Log entires.
 
-* Not yet Tested
+* Tested 5.5.2
+* Not tested agaist 5.4.x but might work.
 
 Installation using Git
 ------------
@@ -29,6 +27,18 @@ Installation using zip / tar.gz
 * In your helpdesk, enable the plugin from **Setup->Features & Plugins**.
 
 Note: Make sure you branch number matches your Cerberus Version Number.
+
+Using the plugin
+-----------
+* Make sure you backup you database especially your ticket_audit_log table.
+* Setup->Settings->scheduler
+* Select "[Cerb5Blog.com] Convert Audit Log Cron Task"
+* Make sure the setting are what you want and enable.
+
+Notes
+-----------
+Ever scheduler/cron run will migrate 1000 (default) records from the ticket_audit_log table to context_activity_log.
+If you use the setting "Convert only records that are currently tracked under Activity Logs and dump the rest?" some records will be destoryed.  You have been warned.
 
 Credits
 -------
