@@ -7,15 +7,14 @@ What's this?
 ------------
 Converts Cerberus Audit log entires to Activity Log entires.
 
-* Tested 5.5.2
-* Not tested agaist 5.4.x but might work.
+* Not yet tested 
 
 Installation using Git
 ------------
 * Change directory to **/cerb5/storage/plugins/**
 * `git clone git://github.com/rmiddle/cerb5blog.convert_auditlog.git`
 * `cd cerb5blog.convert_auditlog`
-* `git checkout --track -b 5.5 origin/5.5`
+* `git checkout --track -b 5.6 origin/5.6`
 * In your helpdesk, enable the plugin from **Setup->Features & Plugins**.
 
 Installation using zip / tar.gz
