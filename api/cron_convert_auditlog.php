@@ -31,7 +31,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 			// Loop though the records.
             $save = false;
 			$id = intval($row['id']);
-            $logger->info("[Cerb5Blog.com] Processing id: " . $id);
+            $logger->info("[Cerb5Blog.com] Processing Audit Log id: " . $id . " TIcket Id: " . $ticket_id);
 		    $ticket_id = intval($row['ticket_id']);
             $ticket = DAO_Ticket::get($ticket_id);
             $worker_id = intval($row['worker_id']);
@@ -76,7 +76,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 							),
 						'urls' => array(
                            'target' => ('c=display&mask=' . $ticket->mask),
-                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $who),
 							)
 					);
                     if ($worker_id) {
@@ -108,7 +108,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 							),
 						'urls' => array(
                            'target' => ('c=display&mask=' . $ticket->mask),
-                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $who),
 							)
 					);
                     if ($worker_id) {
@@ -140,7 +140,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 							),
 						'urls' => array(
                            'target' => ('c=display&mask=' . $ticket->mask),
-                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $who),
 							)
 					);
                     $actor_context = 'cerberusweb.contexts.worker';
@@ -167,7 +167,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
 							),
 						'urls' => array(
                            'target' => ('c=display&mask=' . $ticket->mask),
-                           'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+                           'actor' => ('c=profiles&type=worker&who=' . $who),
 							)
 					);
                         $actor_context = 'cerberusweb.contexts.worker';
@@ -192,7 +192,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             ),
                         'urls' => array(
                             'source' => 'c=display&mask='.$ticket->mask,
-                            'actor' => ('c=profiles&type=worker&who=' . $ticket->mask),
+                            'actor' => ('c=profiles&type=worker&who=' . $who),
                             )
                     );                    
                     $actor_context = 'cerberusweb.contexts.worker';
@@ -360,9 +360,11 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 'variables' => array(
                                     'ticket' => sprintf("[%s]", $ticket->mask),
                                     'spam_score' => sprintf("(%s)", $change_value),
+                                    'actor' => $worker_name,
                                     ),
                                 'urls' => array(
                                     'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                    'actor' => ('c=profiles&type=worker&who=' . $who),
                                     )
                                 );
                         $actor_context = 'cerberusweb.contexts.group';
@@ -380,14 +382,15 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                         $entry = array(
                             //{{actor}} replied to ticket {{target}}
                             'message' => 'Ticket {{ticket}} trained to {{spam_training}}',
-                                'variables' => array(
-                                    'ticket' => sprintf("[%s]", $ticket->mask),
-                                    'spam_training' => sprintf("(%s)", $spam_training),
-                                    ),
-                                'urls' => array(
-                                    'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-                                    )
-                                );
+                            'variables' => array(
+                                'ticket' => sprintf("[%s]", $ticket->mask),
+                                'spam_training' => sprintf("(%s)", $spam_training),
+                                'actor' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'actor' => ('c=profiles&type=worker&who=' . $who),                                    )
+                            );
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $ticket->group_id;
                         break;
@@ -447,13 +450,15 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                             //{{actor}} replied to ticket {{target}}
                             'message' => 'Ticket {{ticket}} created at {{created_date}}',
                                 'variables' => array(
-                                    'ticket' => sprintf("[%s]", $ticket->mask),
-                                    'created_date' => sprintf("(%s)", date('Y-m-d H:i:s', $change_value)),
-                                    ),
-                                'urls' => array(
-                                    'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-                                    )
-                                );
+                                'ticket' => sprintf("[%s]", $ticket->mask),
+                                'created_date' => sprintf("(%s)", date('Y-m-d H:i:s', $change_value)),
+                                'actor' => $worker_name,
+                                ),
+                            'urls' => array(
+                                'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
+                                'actor' => ('c=profiles&type=worker&who=' . $who),                                    )
+                                )
+                            );
                         $actor_context = 'cerberusweb.contexts.group';
                         $actor_context_id = $ticket->group_id;
                         break;
@@ -490,7 +495,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                     DAO_ContextActivityLog::ENTRY_JSON => json_encode($entry),
                 ));
             }
-            $logger->info("[Cerb5Blog.com] Removing id: " . $id);
+            $logger->info("[Cerb5Blog.com] Removing Audit Log id: " . $id . " TIcket Id: " . $ticket_id);
             $db->Execute(sprintf("DELETE QUICK FROM ticket_audit_log WHERE id = (%d)", $id));
 		}
 		$logger->info("[Cerb5Blog.com] Finished processing Convert Audit Log Cron Job.");
