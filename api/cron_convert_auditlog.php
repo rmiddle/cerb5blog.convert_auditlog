@@ -456,7 +456,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                                 ),
                             'urls' => array(
                                 'ticket' => $url_writer->writeNoProxy('c=display&mask='.$ticket->mask, true),
-                                'actor' => ('c=profiles&type=worker&who=' . $who),                                    )
+                                'actor' => ('c=profiles&type=worker&who=' . $who),
                                 )
                             );
                         $actor_context = 'cerberusweb.contexts.group';
