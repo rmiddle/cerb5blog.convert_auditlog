@@ -14,8 +14,18 @@ Installation using Git
 * Change directory to **/cerb5/storage/plugins/**
 * `git clone git://github.com/rmiddle/cerb5blog.convert_auditlog.git`
 * `cd cerb5blog.convert_auditlog`
-* `git checkout --track -b internal/master origin/internal/master`
+* `git checkout --track -b 5.6 origin/5.6`
 * In your helpdesk, enable the plugin from **Setup->Features & Plugins**.
+
+Installation using zip / tar.gz
+------------
+* Goto `https://github.com/rmiddle/cerb5blog.convert_auditlog`
+* Select the correct branch that matches your version of Cerberus
+* click Download button.
+* Unzip in to **/cerb5/storage/plugins/cerb5blog.convert_auditlog**
+* In your helpdesk, enable the plugin from **Setup->Features & Plugins**.
+
+Note: Make sure you branch number matches your Cerberus Version Number.
 
 Using the plugin
 -----------
