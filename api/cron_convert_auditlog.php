@@ -491,7 +491,7 @@ class Cerb5BlogConvertAuditLogCron extends CerberusCronPageExtension {
                 ));
             }
             $logger->info("[Cerb5Blog.com] Removing id: " . $id);
-            //$db->Execute(sprintf("DELETE QUICK FROM ticket_audit_log WHERE id = (%d)", $id));
+            $db->Execute(sprintf("DELETE QUICK FROM ticket_audit_log WHERE id = (%d)", $id));
 		}
 		$logger->info("[Cerb5Blog.com] Finished processing Convert Audit Log Cron Job.");
     }
