@@ -2,7 +2,7 @@
 <plugin xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="http://www.devblocks.com/schema/plugin.xsd">
 	<id>cerb5blog.convert_auditlog</id>
 	<name>[Cerb5Blog.com] Convert Audit Log</name>
-	<description>Converts Cerberus 5.3 Audit log entires to 5.5 or greater Activity Log entires</description>
+	<description>Converts Cerberus Audit log entires to Activity Log entires</description>
 	<author>Robert Middleswarth</author>
 	<revision>7</revision>
 	<link>http://www.cerb5blog.com/project/convert_auditlog</link>
