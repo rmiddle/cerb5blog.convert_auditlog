@@ -8,6 +8,12 @@
 	<link>http://www.cerb5blog.com/project/convert_auditlog</link>
 	<image>plugin.png</image>
 
+	<!-- Requirements -->
+	
+	<requires>
+		<app_version min="5.6" max="5.7" />
+	</requires>
+	
 	<!-- Plugin Dependencies -->
 	
 	<dependencies>
