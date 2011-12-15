@@ -4,7 +4,7 @@
 	<name>[Cerb5Blog.com] Convert Audit Log</name>
 	<description>Converts Cerberus Audit log entires to Activity Log entires</description>
 	<author>Robert Middleswarth</author>
-	<revision>7</revision>
+	<version>1.0.7</version>
 	<link>http://www.cerb5blog.com/project/convert_auditlog</link>
 	<image>plugin.png</image>
 
@@ -17,9 +17,41 @@
 	<!-- Plugin Dependencies -->
 	
 	<dependencies>
-		<require plugin_id="cerberusweb.core" version="5.5" />
+		<require plugin_id="cerberusweb.core" version="5.4.0" />
 	</dependencies>
 
+	<!-- Patches -->
+	
+	<patches>
+		<!--
+		<patch version="5.3.0" revision="1" file="patches/5.3.0.php" />
+		-->
+	</patches>
+	
+	<!-- Exported Classes -->
+	
+	<class_loader>
+		<!--
+		<file path="api/dao/example.php">
+			<class name="DAO_Example" />
+			<class name="Model_Example" />
+			<class name="Plugin_Example" />
+			<class name="SearchFields_Example" />
+			<class name="View_Example" />
+		</file>
+		-->
+	</class_loader>
+
+	<!-- Templates -->
+	
+	<!--
+	<templates set="example.template.namespace">
+		<template path="path/to/template.tpl" />
+	</templates>
+	-->	
+
+	<!-- Extensions -->
+ 
 	<extensions>
 		<extension point="cerberusweb.cron">
 			<id>cerb5blog.convert_auditlog.cron</id>
