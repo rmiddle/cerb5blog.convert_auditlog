@@ -4,14 +4,14 @@
 	<name>[Cerb5Blog.com] Convert Audit Log</name>
 	<description>Converts Cerberus Audit log entires to Activity Log entires</description>
 	<author>Robert Middleswarth</author>
-	<version>1.0.7</version>
+	<version>1.0.8</version>
 	<link>http://www.cerb5blog.com/project/convert_auditlog</link>
 	<image>plugin.png</image>
 
 	<!-- Requirements -->
 	
 	<requires>
-		<app_version min="5.6" max="5.7" />
+		<app_version min="5.6" max="5.7.99" />
 	</requires>
 	
 	<!-- Plugin Dependencies -->
