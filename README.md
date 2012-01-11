@@ -3,9 +3,6 @@ Cerb5 Plugins - cerb5blog.convert_auditlog
 Copyright (C) 2011 Robert Middleswarth
 [http://www.cerb5blog.com/](http://www.cerb5blog.com/)  
 
-`Warning this version is still considered in development and may not work as expected`
-===========================================
-
 What's this?
 ------------
 Converts Cerberus Audit log entires to Activity Log entires.
